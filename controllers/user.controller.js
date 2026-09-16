@@ -47,7 +47,7 @@ export const register = async(req, res) => {
 }
 }
 
-export const login = async(req, res) => {
+export const login = async (req, res) => {
     try {
         const {email, password} = req.body;
 
@@ -57,6 +57,50 @@ export const login = async(req, res) => {
             })
         }
 
+        const user = await User.findOne({
+            where: {email}
+        })
+
+         if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+
+         const isPasswordValid = await user.comparePassword(password);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+
+        // 4. Generate JWT
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "1d"
+            }
+        );
+
+        // 5. Send response
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+
+            data: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                token
+            }
+        });
         
     } catch(err) {
         console.error(err)
