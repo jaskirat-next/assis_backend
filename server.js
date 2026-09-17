@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv"
 import router from "./routes/user.route.js";
+import docRouter from "./routes/document.route.js";
 
 dotenv.config()
 
@@ -11,6 +12,7 @@ const app = express()
 app.use(express.json())
 
 app.use("/api/auth", router)
+app.use("/api/doc", docRouter)
 
 app.get("/", (req, res) => {
     res.json({
