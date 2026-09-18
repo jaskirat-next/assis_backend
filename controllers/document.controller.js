@@ -1,4 +1,5 @@
 import Document from "../models/documents.model.js";
+import { extractTextFromPDF } from "../services/pdfService.js";
 
 export const uploadDocument = async(req, res) => {
     try {
@@ -10,12 +11,15 @@ export const uploadDocument = async(req, res) => {
         }
          const userId = req.user.id;
 
+         const text = await extractTextFromPDF(req.file.path)
+
          const document = await Document.create({
             user_id: userId,
             title: req.body.title || req.file.originalname,
             file_name: req.file.originalname,
             file_type: req.file.mimetype,
-            file_path: req.file.path
+            file_path: req.file.path,
+            content: text
         });
 
         return res.status(201).json({
@@ -26,7 +30,7 @@ export const uploadDocument = async(req, res) => {
 
 
     } catch(err) {
-        console.error(error);
+        console.error(err);
 
         return res.status(500).json({
             success: false,
