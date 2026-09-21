@@ -1,5 +1,8 @@
+import DocumentChunk from "../models/documentChunks.model.js";
 import Document from "../models/documents.model.js";
+import { chunkText } from "../services/chunkService.js";
 import { extractTextFromPDF } from "../services/pdfService.js";
+
 
 export const uploadDocument = async(req, res) => {
     try {
@@ -21,6 +24,25 @@ export const uploadDocument = async(req, res) => {
             file_path: req.file.path,
             content: text
         });
+
+        const chunks = chunkText(text)
+        console.log("Total chunks", chunks.length);
+
+        for(let i=0; i< chunks.length; i++) {
+            await DocumentChunk.create({
+                document_id: document.id,
+                chunk_index: i,
+                content: chunks[i]
+            })
+        }
+
+         return res.status(201).json({
+            message: "Document uploaded and processed successfully",
+            data: {
+                document,
+                total_chunks: chunks.length
+            }
+         })
 
         return res.status(201).json({
             success: true,
