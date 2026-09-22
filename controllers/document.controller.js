@@ -1,7 +1,9 @@
 import DocumentChunk from "../models/documentChunks.model.js";
 import Document from "../models/documents.model.js";
 import { chunkText } from "../services/chunkService.js";
+import { generateEmbeddings } from "../services/embeddingService.js";
 import { extractTextFromPDF } from "../services/pdfService.js";
+import { saveEmbeddings } from "../services/vectorService.js";
 
 
 export const uploadDocument = async(req, res) => {
@@ -29,11 +31,16 @@ export const uploadDocument = async(req, res) => {
         console.log("Total chunks", chunks.length);
 
         for(let i=0; i< chunks.length; i++) {
-            await DocumentChunk.create({
+           const chunk =  await DocumentChunk.create({
                 document_id: document.id,
                 chunk_index: i,
                 content: chunks[i]
             })
+
+            const embedding = await generateEmbeddings(chunks[i]);
+
+            await saveEmbeddings(chunk.id, embedding )
+            console.log(`Embedding saved for chunk ${chunk.id}`);
         }
 
          return res.status(201).json({
@@ -43,13 +50,6 @@ export const uploadDocument = async(req, res) => {
                 total_chunks: chunks.length
             }
          })
-
-        return res.status(201).json({
-            success: true,
-            message: "Document uploaded successfully",
-            data: document
-        });
-
 
     } catch(err) {
         console.error(err);
