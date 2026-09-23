@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv"
 import router from "./routes/user.route.js";
 import docRouter from "./routes/document.route.js";
+import chatRouter from "./routes/chat.route.js";
 
 dotenv.config()
 
@@ -13,6 +14,7 @@ app.use(express.json())
 
 app.use("/api/auth", router)
 app.use("/api/doc", docRouter)
+app.use("/api/chat", chatRouter)
 
 app.get("/", (req, res) => {
     res.json({

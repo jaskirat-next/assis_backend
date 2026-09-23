@@ -2,7 +2,7 @@ import "dotenv/config";
 import { generateEmbeddings } from "./embeddingService.js";
 import { searchSimilarChunks } from "./vectorSearchService.js";
 
-const question = "casual leave";
+const question = "how many CL leaves i can get in a year";
 
 console.log("question", question);
 
@@ -11,6 +11,7 @@ const queryEmbedding = await generateEmbeddings(question);
 console.log("quesry dimensions", queryEmbedding.length);
 
 const result = await searchSimilarChunks(queryEmbedding, 5);
+console.log(result)
 
 result.forEach((result, index) => {
     console.log(`--- Result ${index + 1} ---`);
