@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv"
 import router from "./routes/user.route.js";
 import docRouter from "./routes/document.route.js";
@@ -10,6 +11,7 @@ const { default: sequelize } = await import("./config/database.js");
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.use("/api/auth", router)

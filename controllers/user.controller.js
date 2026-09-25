@@ -4,12 +4,13 @@ import jwt from "jsonwebtoken"
 
 export const register = async(req, res) => {
     try {
-        const {name, email, password} = req.body;
+        const {name, email, password} = req.body || {};
 
         if(!name || !email || !password) {
             return res.status(400).json({
-                msg: "name, email, password are required"
-            })
+                success: false,
+                message: "Name, email, and password are required"
+            });
         }
 
         const existUser = await User.findOne({
@@ -17,9 +18,10 @@ export const register = async(req, res) => {
         })
 
         if(existUser) {
-            res.status(409).json({
-                msg: "User already exits"
-            })
+            return res.status(409).json({
+                success: false,
+                message: "User already exists"
+            });
         }
 
         const user = await User.create({
@@ -45,17 +47,18 @@ export const register = async(req, res) => {
             success: false,
             message: "Something went wrong",
         });
-}
+    }
 }
 
 export const login = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const {email, password} = req.body || {};
 
         if(!email || !password) {
-            res.status(401).json({
-                msg: "email and password are reqquired"
-            })
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
         }
 
         const user = await User.findOne({
@@ -104,6 +107,10 @@ export const login = async (req, res) => {
         });
         
     } catch(err) {
-        console.error(err)
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 }
