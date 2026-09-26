@@ -20,6 +20,11 @@ const DocumentChunk = sequelize.define(
             allowNull: false
         },
 
+        embedding: {
+        type: DataTypes.ARRAY(DataTypes.FLOAT), 
+        allowNull: true,
+        },
+
         content: {
             type: DataTypes.TEXT,
             allowNull: false
